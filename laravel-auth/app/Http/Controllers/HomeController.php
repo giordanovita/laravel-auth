@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+
 use App\Car;
 use App\Pilot;
 use App\Brand;
+use App\Mail\NewCarNotify;
+use Illuminate\Support\Facades\Auth;
 
 
 class HomeController extends Controller
@@ -57,6 +61,12 @@ class HomeController extends Controller
             $car -> save();
             $car -> pilots() -> attach($request -> pilots_id);
             $car -> save();
+
+            $user = Auth::user();
+
+            Mail::to('admin@mail.com')->send(new NewCarNotify($car));
+            Mail::to($user -> email)->send(new NewCarNotify($car));
+
     
             return redirect() -> route('carsList');
         }
